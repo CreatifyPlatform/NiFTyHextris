@@ -7,7 +7,7 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.4
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.4/contracts/utils/Counters.sol";
 import "https://github.com/smartcontractkit/chainlink/blob/release/0.10.3.1/evm-contracts/src/v0.6/VRFConsumerBase.sol";
 
-contract NiftyGame is Context, ERC721 {
+contract NiFTyHextris is Context, ERC721 {
 
     using Counters for Counters.Counter;
 

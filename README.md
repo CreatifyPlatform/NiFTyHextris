@@ -1,9 +1,9 @@
-# NiFTy
+# NiFTyHextris
 Browser based Game where players can claim NFT collectibles
 
 ## Inspiration
 
-To build a cool game using Chainlink VRF to allow gamers to claim NFTs once they achieve a high score.
+To build a cool game using Chainlink VRF to allow gamers to claim NFTs once they achieve a high score. Refactored version of [Hextris](https://github.com/Hextris/hextris) to support creation of NFT after achieving high score.
 
 ## What it does
 
