@@ -1,4 +1,4 @@
-# NiftyGame
+# NiFTy
 Browser based Game where players can claim NFT collectibles
 
 ## Inspiration
