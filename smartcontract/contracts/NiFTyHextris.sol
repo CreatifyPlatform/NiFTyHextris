@@ -98,7 +98,7 @@ contract RandomNumberConsumer is VRFConsumerBase {
     /** 
      * Requests the address of the Chainlink Token on this network 
      */
-    function getChainlinkToken() public view returns (address) {
+    function getChainlinkTokenAddress() public view returns (address) {
         return address(LINK);
     }
 
