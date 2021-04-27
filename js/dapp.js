@@ -1,6 +1,3 @@
-// const IPFS = IpfsApi;
-// const ipfs = new IPFS({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
-
 let walletAddress;
 let NiFTyHextrisContract;
 let RandomNumberConsumerContract;
@@ -8,7 +5,7 @@ let RandomNumberConsumerContract;
 let startGameTXReceipt;
 let gameID;
 let randomness;
-let startGameTXHash;
+let endGameTXHash;
 
 
 // Inject our version of web3.js into the DApp.
@@ -72,13 +69,13 @@ function checkNetwork() {
 }
 
 function initDApp() {
-  NiFTyHextrisContract = new web3.eth.Contract(NiFTyHextrisContractABI, NiFTyHextrisContractAddress, {
-    from: walletAddress,
-    gasPrice: '200000000000' // default gas price in wei, 20 gwei in this case
-  });
   RandomNumberConsumerContract = new web3.eth.Contract(RandomNumberConsumerContractABI, RandomNumberConsumerContractAddress, {
     from: walletAddress,
-    gasPrice: '200000000000' // default gas price in wei, 20 gwei in this case
+    gasPrice: '30000000000' // default gas price in wei, 30 gwei in this case
+  });
+  NiFTyHextrisContract = new web3.eth.Contract(NiFTyHextrisContractABI, NiFTyHextrisContractAddress, {
+    from: walletAddress,
+    gasPrice: '30000000000' // default gas price in wei, 30 gwei in this case
   });
 }
 
@@ -108,46 +105,31 @@ function getETHBalance() {
   });
 }
 
-function getPMRBalance() {
-  return new Promise(resolve => {
-    NiFTyHextrisContract.methods.balanceOf(walletAddress).call((error, result) => {
-      if (!error) {
-        console.log(web3.utils.fromWei(result, "ether"));
-        resolve(web3.utils.fromWei(result, "ether"));
-      } else {
-        resolve(error);
-      }
-    });
-  });
-}
-
 function createGameID() {
   return new Promise(resolve => {
     NiFTyHextrisContract.methods.startGame().send()
     .on('transactionHash', function (txHash) {
-        console.log(txHash);
-      })
-      .on('confirmation', function (confirmationNumber, receipt) {
-        console.log(confirmationNumber);
-        //console.log(receipt);
-      })
-      .on('receipt', function (receipt) {
-        // receipt example
-        console.log(receipt);
-        resolve(receipt);
-      })
-      .on('error', function (error, errData) {
-        // Error
-        console.log(error);
-        resolve(errData);
-      });
-
+      console.log(txHash);
+    })
+    .on('confirmation', function (confirmationNumber, receipt) {
+      console.log(confirmationNumber);
+      //console.log(receipt);
+    })
+    .on('receipt', function (receipt) {
+      // receipt
+      console.log(receipt);
+      resolve(receipt);
+    })
+    .on('error', function (error, errData) {
+      // Error
+      console.log(error);
+      resolve(errData);
+    });
   });
 }
 
 function getRandomNumber() {
   return new Promise(resolve => {
-    console.log("in getRandomNumber");
     RandomNumberConsumerContract.once('RequestRandomnessFulfilled', {
       filter: {
         requestId: gameID
@@ -164,81 +146,88 @@ function getRandomNumber() {
   });
 }
 
-// function submitGameResult(timeTaken, movesMade) {
-//   return new Promise(resolve => {
-//     PairMatchContract.methods.gameOver(gameID, Date.now(), movesMade, timeTaken).send()
-//       .on('transactionHash', function (txHash) {
-//         console.log(txHash);
-//         resolve(txHash);
-//       })
-//       .on('confirmation', function (confirmationNumber, receipt) {
-//         console.log(confirmationNumber);
-//         //console.log(receipt);
-//       })
-//       .on('receipt', function (receipt) {
-//         // receipt example
-//         console.log(receipt);
-//       })
-//       .on('error', function (error, errData) {
-//         // Error
-//         console.log(error);
-//         resolve(errData);
-//       });
-
-//   });
-// }
+function submitGameResult() {
+  return new Promise(resolve => {
+    NiFTyHextrisContract.methods.gameOver(gameID, score).send()
+    .on('transactionHash', function (txHash) {
+      console.log(txHash);
+      resolve(txHash);
+    })
+    .on('confirmation', function (confirmationNumber, receipt) {
+      console.log(confirmationNumber);
+      //console.log(receipt);
+    })
+    .on('receipt', function (receipt) {
+      // receipt example
+      console.log(receipt);
+    })
+    .on('error', function (error, errData) {
+      // Error
+      console.log(error);
+      resolve(errData);
+    });
+  });
+}
 
 async function fetchAccountDetails() {
   // Fetch the Account Details
   walletAddress = web3.utils.toChecksumAddress(await getCoinbase());
   document.getElementById('gamerWalletAddress').innerHTML = walletAddress;
   let walletETHBalance = await getETHBalance();
-  document.getElementById('ethBalance').innerHTML = walletETHBalance + " ETH";
+  document.getElementById('ethBalance').innerHTML = " | " + walletETHBalance + "Ξ";
 }
 
-// async function fetchPairMatchDetails() {
-//   let walletPMRBalance = await getPMRBalance();
-//   document.getElementById('pmrBalance').innerHTML = walletPMRBalance + " PMR";
-// }
-
 async function startDApp() {
-  console.log('Starting nifty DApp');
-//   overlayOn();
+  console.log('Ready to Start NiFTy Game');
   checkNetwork();
   await fetchAccountDetails();
   initDApp();
-//   await fetchPairMatchDetails();
+  // Add button overlay to start Web3 Game
+  document.getElementById("web3GameOptions").innerHTML = "<button id='startBtn' onclick='playGame();'></button>";
 }
 
-function startButtonSpinning(){
-  $('#start-game-cta').html(function(){
-    return '<span class="'+$(this).data('spinner')+'"></span>';
-  }).addClass('spinning');
-}
-
-function stopButtonSpinning(){
-  $('#start-game-cta').html(function(){
-    return '<span class="'+$(this).data('text')+'"></span>';
-  }).removeClass('spinning');
-}
+watcher.registerListener(function(val) {
+  if(val == "readyToStart") {
+    document.getElementById('gameStatus').innerHTML = "Click To Start New Game!";
+    console.log("Calling Smart Contract");
+  }
+  if(val == "inGame") {
+    init();
+    console.log("Playing the Game with GameID: " + gameID);
+    document.getElementById('gameStatus').innerHTML = "Game ID: " + gameID;
+  }
+  if(val == "gameOver") {
+    console.log("Submitting Game Score");
+    document.getElementById('gameStatus').innerHTML = "Submitting Game Score";
+    endGame();
+  }
+  if(val == "gameScoreSubmitted") {
+    console.log("Game Score Submitted with TX: " + endGameTXHash);
+    document.getElementById('gameStatus').innerHTML = "Ready To Start New Game!";
+    alert("Game Score Submitted with TX: " + endGameTXHash);
+  }
+});
 
 async function playGame() {
-    // Create a TX to generate a Random Number for a gameID/requestID
-    startGameTXReceipt = await createGameID();
-    gameID = startGameTXReceipt.events.StartGame.returnValues.gameID;
-    // document.getElementById('gameID').innerHTML = "Game ID: " + gameID;
-    // Show Loading screen replacing with button
-  
-    // Check for the fulfillRandomness event for the requestID
-    randomness = await getRandomNumber();
-    let randomNumber = parseFloat(randomness) / (Math.pow(10, randomness.length));
-    console.log("randomNumber", randomNumber);
-    // have randomNumber ready do derive any number of random numbers from it for randInt():
-    // newRandomNumber = randomNumber * Math.random() // ;)
-  }
-  
+  document.getElementById('gameStatus').innerHTML = "Fetching GameID from Blockchain...";
+  // Create a TX to generate a Random Number for a gameID/requestID
+  startGameTXReceipt = await createGameID();
+  gameID = startGameTXReceipt.events.GameStarted.returnValues.gameID;
+  document.getElementById('gameStatus').innerHTML = "Game ID: " + gameID;
+  // Show Loading screen replacing with button
+  document.getElementById('gameStatus').innerHTML = "Awaiting Random Number...";
+  // Check for the fulfillRandomness event for the requestID
+  randomness = await getRandomNumber();
+  let randomNumber = parseFloat(randomness) / (Math.pow(10, randomness.length));
+  console.log("randomNumber ", randomNumber);
+  document.getElementById('gameStatus').innerHTML = "Random Number: " + randomNumber;
+  // have randomNumber ready do derive any number of random numbers from it for randInt():
+  // newRandomNumber = randomNumber * Math.random() // ;)
+  watcher.gameStatus = "inGame";
+}
 
-async function EndGame(timeTaken, movesMade) {
-  startGameTXHash = await submitGameResult(timeTaken, movesMade);
-  document.getElementById('gameEndTXHash').innerHTML = "GameOver TX Hash: " + startGameTXHash;
+async function endGame() {
+  endGameTXHash = await submitGameResult();
+  //document.getElementById('gameEndTXHash').innerHTML = "GameOver TX Hash: " + startGameTXHash;
+  watcher.gameStatus = "gameScoreSubmitted";
 }

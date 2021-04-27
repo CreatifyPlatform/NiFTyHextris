@@ -41,17 +41,15 @@ contract NiFTyHextris is Context, ERC721 {
         return _gameID;
     }
 
-    function gameOver(bytes32 _gameID, uint256 _points, uint256 _timeTaken) public virtual {
+    function gameOver(bytes32 _gameID, uint256 _points) public virtual {
+        uint256 timeTaken = block.timestamp - Games[msg.sender][_gameID].startTime;
         Games[msg.sender][_gameID].endTime = block.timestamp;
         Games[msg.sender][_gameID].points = _points;
-        Games[msg.sender][_gameID].timeTaken = block.timestamp - Games[msg.sender][_gameID].startTime;
-        // We cannot just use balanceOf to create the new tokenId because tokens
-        // can be burned (destroyed), so we need a separate counter.
+        Games[msg.sender][_gameID].timeTaken = timeTaken;
         uint256 tokenId = _tokenIdTracker.current();
-        // todo: _safeMint(address to, uint256 tokenId)
         _mint(msg.sender, tokenId);
         _tokenIdTracker.increment();
-        emit GameOver(msg.sender, _gameID, block.timestamp, _points, _timeTaken, tokenId);
+        emit GameOver(msg.sender, _gameID, block.timestamp, _points, timeTaken, tokenId);
     }
 }
 

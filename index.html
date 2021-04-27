@@ -34,6 +34,7 @@
 		<script type='text/javascript' src="vendor/jsonfn.min.js"></script>
 		<script type='text/javascript' src="vendor/keypress.min.js"></script>
 		<script type='text/javascript' src="vendor/jquery.js"></script>
+		<script type='text/javascript' src="js/watcher.js" defer></script>
 		<script type='text/javascript' src="js/save-state.js"></script>
 		<script type='text/javascript' src="js/view.js"></script>
 		<script type='text/javascript' src="js/wavegen.js"></script>
@@ -50,10 +51,10 @@
 		<script type='text/javascript' src="js/initialization.js"></script>
 		<script type="text/javascript" src='vendor/rrssb.min.js' defer></script>
 		<script src="vendor/sweet-alert.min.js"></script>
-		<script type="text/javascript" src="js/dapp.js" defer></script>
 		<script type="text/javascript" src="js/web3.min.js" defer></script>
 		<script type="text/javascript" src="js/RandomNumberConsumer.js" defer></script>
 		<script type="text/javascript" src="js/NiFTyHextris.js" defer></script>
+		<script type="text/javascript" src="js/dapp.js" defer></script>
 		<link rel="stylesheet" href="style/rrssb.css"/>
 	</head>
 	<body>
@@ -67,13 +68,16 @@
 		<div class="faded overlay"></div>
 		<img id="pauseBtn" src="./images/btn_pause.svg"/>
 		<img id='restartBtn' src="./images/btn_restart.svg"/>
-		<div id='HIGHSCORE'>HIGH SCORE</div>
+		<div id='walletDetailsText'>
+			<div id='walletAddressBlock'><span id="gamerWalletAddress"></span><span id="ethBalance"></span></div>
+			<div id='ethBalanceBlock'><span id="ethBalance"></span></div>
+			<div id='gameStatusBlock'><span id="gameStatus"></span></div>
+		</div>
 		<div id='highScoreInGameText'>
-			<div id='gamerWalletAddress' style="color: #0e404d;"><span>Wallet Address: </span><span id="gamerWalletAddress"></span></div>
-			<div id='ethBalance' style="color: #0e404d;"><span>ETH Balance: </span><span id="gamerWalletAddress"></span></div>
 			<div id='highScoreInGameTextHeader'>HIGH SCORE</div>
 			<div id='currentHighScore'>10292</div>
 		</div>
+		<div id='web3GameOptions'></div>
 		<div id="gameoverscreen">
 			<div id='container'>
 				<div id='gameOverBox' class='GOTitle'>GAME OVER</div>

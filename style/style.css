@@ -210,7 +210,7 @@ button:focus {
 
 #highScoreInGameText {
 	position: absolute;
-	top:10px;
+	top:50px;
 	text-align: center;
 	width:200px;
 	left:50%;
@@ -222,6 +222,21 @@ button:focus {
 	width:100%;
 	margin-top: -5px;
 	font-size:2em;
+}
+
+#walletAddressBlock {
+	color: #bdc3c7;
+	width:100%;
+}
+
+#walletDetailsText {
+	position: absolute;
+	top: 20px;
+	text-align: center;
+	width: 700px;
+	left: 50%;
+  	transform: translate(-50%, -50%);
+	color: #0e404d;
 }
 
 @media only screen and (max-device-width:480px) {

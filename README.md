@@ -29,5 +29,5 @@ HTML, CSS, JavaScript, Solidity, Web3.js, Chainlink
 
 ### Rinkeby Testnet
 
-RandomNumberConsumer    - 0xD9C8e8a2EEC0f5D7723E08Fa1fCa5A9b007b8b14
-NiFTyHextris            - 0x99Af68711af938cF11F9efCA6F472CD243C3b259
+RandomNumberConsumer    - 0xC39261096656F5BFe40D142F86e7b608f3996966
+NiFTyHextris            - 0x16F5160f82E3E55ccef997eB23C9d469fE9C70ae
