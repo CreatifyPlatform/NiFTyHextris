@@ -178,18 +178,34 @@ async function fetchAccountDetails() {
 }
 
 async function startDApp() {
-  console.log('Ready to Start NiFTy Game');
   checkNetwork();
   await fetchAccountDetails();
   initDApp();
+  console.log('Ready to Start NiFTy Game');
+  document.getElementById('gameStatus').innerHTML = "Click To Start NiFTy Game!";
   // Add button overlay to start Web3 Game
   document.getElementById("web3GameOptions").innerHTML = "<button id='startBtn' onclick='playGame();'></button>";
 }
 
+function playGame() {
+  if(watcher.gameStatus == "readyToStart") {
+    watcher.gameStatus = "startWeb3Game";
+  }
+  if(watcher.gameStatus == "startWeb3Game") {
+    console.log("Already Requested a GameID...");
+    document.getElementById('gameStatus').innerHTML = "Already Requested a GameID...";
+  }
+  if(watcher.gameStatus == "inGame") {
+    console.log("Already in game. Exit to start new game...");
+    document.getElementById('gameStatus').innerHTML = "Already in game. Exit to start new game...";
+  }
+}
+
 watcher.registerListener(function(val) {
-  if(val == "readyToStart") {
-    document.getElementById('gameStatus').innerHTML = "Click To Start New Game!";
+  if(val == "startWeb3Game") {
     console.log("Calling Smart Contract");
+    document.getElementById('gameStatus').innerHTML = "Calling Smart Contract...";
+    startWeb3Game();
   }
   if(val == "inGame") {
     init();
@@ -205,10 +221,11 @@ watcher.registerListener(function(val) {
     console.log("Game Score Submitted with TX: " + endGameTXHash);
     document.getElementById('gameStatus').innerHTML = "Ready To Start New Game!";
     alert("Game Score Submitted with TX: " + endGameTXHash);
+    watcher.gameStatus = "readyToStart";
   }
 });
 
-async function playGame() {
+async function startWeb3Game() {
   document.getElementById('gameStatus').innerHTML = "Fetching GameID from Blockchain...";
   // Create a TX to generate a Random Number for a gameID/requestID
   startGameTXReceipt = await createGameID();
